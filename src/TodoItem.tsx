@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+} from 'react';
 import type { Todo } from './types';
 import { findTime } from './parseTime';
 
@@ -16,6 +22,47 @@ function TextWithTime({ text }: { text: string }) {
   );
 }
 
+function getCaretFromPoint(x: number, y: number): { node: Node; offset: number } | null {
+  const doc = document as Document & {
+    caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null;
+    caretRangeFromPoint?: (x: number, y: number) => Range | null;
+  };
+  if (doc.caretPositionFromPoint) {
+    const pos = doc.caretPositionFromPoint(x, y);
+    if (pos) return { node: pos.offsetNode, offset: pos.offset };
+  }
+  if (doc.caretRangeFromPoint) {
+    const range = doc.caretRangeFromPoint(x, y);
+    if (range) return { node: range.startContainer, offset: range.startOffset };
+  }
+  return null;
+}
+
+function offsetWithin(root: Node, target: Node, offsetInTarget: number): number {
+  let total = 0;
+  let found = false;
+
+  function walk(parent: Node) {
+    if (found) return;
+    for (const child of Array.from(parent.childNodes)) {
+      if (found) return;
+      if (child === target) {
+        total += offsetInTarget;
+        found = true;
+        return;
+      }
+      if (child.contains(target)) {
+        walk(child);
+        return;
+      }
+      total += child.textContent?.length ?? 0;
+    }
+  }
+
+  walk(root);
+  return total;
+}
+
 interface Props {
   todo: Todo;
   onToggle: (id: string) => void;
@@ -28,17 +75,28 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit, onMoveToToday }: Pr
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(todo.text);
   const inputRef = useRef<HTMLInputElement>(null);
+  const pendingCursorRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (editing && inputRef.current) {
       const el = inputRef.current;
       el.focus();
-      const end = el.value.length;
-      el.setSelectionRange(end, end);
+      const fallback = el.value.length;
+      const requested = pendingCursorRef.current ?? fallback;
+      const pos = Math.min(Math.max(0, requested), el.value.length);
+      el.setSelectionRange(pos, pos);
+      pendingCursorRef.current = null;
     }
   }, [editing]);
 
-  function startEdit() {
+  function startEdit(e: ReactMouseEvent<HTMLButtonElement>) {
+    const button = e.currentTarget;
+    const caret = getCaretFromPoint(e.clientX, e.clientY);
+    if (caret && button.contains(caret.node)) {
+      pendingCursorRef.current = offsetWithin(button, caret.node, caret.offset);
+    } else {
+      pendingCursorRef.current = null;
+    }
     setDraft(todo.text);
     setEditing(true);
   }
