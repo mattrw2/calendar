@@ -21,7 +21,10 @@ export function WeekView({
 }: Props) {
   const [draft, setDraft] = useState('');
 
-  const sorted = [...todos].sort((a, b) => a.createdAt - b.createdAt);
+  const sorted = [...todos].sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return a.createdAt - b.createdAt;
+  });
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();

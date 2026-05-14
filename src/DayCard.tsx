@@ -27,6 +27,7 @@ export function DayCard({ date, isToday, todos, onAdd, onToggle, onDelete, onEdi
   }
 
   const sorted = [...todos].sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
     const ta = findTime(a.text)?.minutes ?? null;
     const tb = findTime(b.text)?.minutes ?? null;
     if (ta !== null && tb !== null) return ta - tb;
