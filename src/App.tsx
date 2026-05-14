@@ -63,17 +63,13 @@ export default function App() {
   }
 
   function handleToggle(id: string) {
-    withTransition(() => {
-      let updated: Todo | undefined;
-      setTodos((prev) =>
-        prev.map((t) => {
-          if (t.id !== id) return t;
-          updated = { ...t, done: !t.done };
-          return updated;
-        }),
-      );
-      if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
-    });
+    const current = todos.find((t) => t.id === id);
+    if (!current) return;
+    const updated: Todo = { ...current, done: !current.done };
+    withTransition(() =>
+      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t))),
+    );
+    putTodo(updated).catch((err) => console.error('Failed to save todo', err));
   }
 
   function handleDelete(id: string) {
@@ -82,31 +78,23 @@ export default function App() {
   }
 
   function handleEdit(id: string, text: string) {
-    withTransition(() => {
-      let updated: Todo | undefined;
-      setTodos((prev) =>
-        prev.map((t) => {
-          if (t.id !== id) return t;
-          updated = { ...t, text };
-          return updated;
-        }),
-      );
-      if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
-    });
+    const current = todos.find((t) => t.id === id);
+    if (!current) return;
+    const updated: Todo = { ...current, text };
+    withTransition(() =>
+      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t))),
+    );
+    putTodo(updated).catch((err) => console.error('Failed to save todo', err));
   }
 
   function handleMoveToToday(id: string) {
-    withTransition(() => {
-      let updated: Todo | undefined;
-      setTodos((prev) =>
-        prev.map((t) => {
-          if (t.id !== id) return t;
-          updated = { ...t, dateKey: todayKey };
-          return updated;
-        }),
-      );
-      if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
-    });
+    const current = todos.find((t) => t.id === id);
+    if (!current) return;
+    const updated: Todo = { ...current, dateKey: todayKey };
+    withTransition(() =>
+      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t))),
+    );
+    putTodo(updated).catch((err) => console.error('Failed to save todo', err));
   }
 
   return (
