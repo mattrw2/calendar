@@ -1,4 +1,4 @@
-import {
+import React, {
   useEffect,
   useRef,
   useState,
@@ -123,7 +123,10 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit, onMoveToToday }: Pr
   }
 
   return (
-    <li className="flex items-center gap-3 py-2">
+    <li
+      className="flex items-center gap-3 py-2"
+      style={{ viewTransitionName: `todo-${todo.id}` } as React.CSSProperties}
+    >
       <input
         type="checkbox"
         checked={todo.done}

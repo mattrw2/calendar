@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { flushSync } from 'react-dom';
 import dayjs from 'dayjs';
 import type { Todo } from './types';
 import { getAllTodos, putTodo, deleteTodo as dbDelete } from './db';
@@ -8,6 +9,17 @@ import { WeekView } from './WeekView';
 const DAYS_FORWARD = 13;
 
 type View = 'calendar' | 'week';
+
+function withTransition(fn: () => void) {
+  const start = (document as Document & {
+    startViewTransition?: (cb: () => void) => unknown;
+  }).startViewTransition;
+  if (start) {
+    start.call(document, () => flushSync(fn));
+  } else {
+    fn();
+  }
+}
 
 export default function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -46,47 +58,53 @@ export default function App() {
       done: false,
       createdAt: Date.now(),
     };
-    setTodos((prev) => [...prev, todo]);
+    withTransition(() => setTodos((prev) => [...prev, todo]));
     putTodo(todo).catch((err) => console.error('Failed to save todo', err));
   }
 
   function handleToggle(id: string) {
     let updated: Todo | undefined;
-    setTodos((prev) =>
-      prev.map((t) => {
-        if (t.id !== id) return t;
-        updated = { ...t, done: !t.done };
-        return updated;
-      }),
+    withTransition(() =>
+      setTodos((prev) =>
+        prev.map((t) => {
+          if (t.id !== id) return t;
+          updated = { ...t, done: !t.done };
+          return updated;
+        }),
+      ),
     );
     if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
   }
 
   function handleDelete(id: string) {
-    setTodos((prev) => prev.filter((t) => t.id !== id));
+    withTransition(() => setTodos((prev) => prev.filter((t) => t.id !== id)));
     dbDelete(id).catch((err) => console.error('Failed to delete todo', err));
   }
 
   function handleEdit(id: string, text: string) {
     let updated: Todo | undefined;
-    setTodos((prev) =>
-      prev.map((t) => {
-        if (t.id !== id) return t;
-        updated = { ...t, text };
-        return updated;
-      }),
+    withTransition(() =>
+      setTodos((prev) =>
+        prev.map((t) => {
+          if (t.id !== id) return t;
+          updated = { ...t, text };
+          return updated;
+        }),
+      ),
     );
     if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
   }
 
   function handleMoveToToday(id: string) {
     let updated: Todo | undefined;
-    setTodos((prev) =>
-      prev.map((t) => {
-        if (t.id !== id) return t;
-        updated = { ...t, dateKey: todayKey };
-        return updated;
-      }),
+    withTransition(() =>
+      setTodos((prev) =>
+        prev.map((t) => {
+          if (t.id !== id) return t;
+          updated = { ...t, dateKey: todayKey };
+          return updated;
+        }),
+      ),
     );
     if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
   }
