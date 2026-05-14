@@ -63,17 +63,17 @@ export default function App() {
   }
 
   function handleToggle(id: string) {
-    let updated: Todo | undefined;
-    withTransition(() =>
+    withTransition(() => {
+      let updated: Todo | undefined;
       setTodos((prev) =>
         prev.map((t) => {
           if (t.id !== id) return t;
           updated = { ...t, done: !t.done };
           return updated;
         }),
-      ),
-    );
-    if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
+      );
+      if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
+    });
   }
 
   function handleDelete(id: string) {
@@ -82,31 +82,31 @@ export default function App() {
   }
 
   function handleEdit(id: string, text: string) {
-    let updated: Todo | undefined;
-    withTransition(() =>
+    withTransition(() => {
+      let updated: Todo | undefined;
       setTodos((prev) =>
         prev.map((t) => {
           if (t.id !== id) return t;
           updated = { ...t, text };
           return updated;
         }),
-      ),
-    );
-    if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
+      );
+      if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
+    });
   }
 
   function handleMoveToToday(id: string) {
-    let updated: Todo | undefined;
-    withTransition(() =>
+    withTransition(() => {
+      let updated: Todo | undefined;
       setTodos((prev) =>
         prev.map((t) => {
           if (t.id !== id) return t;
           updated = { ...t, dateKey: todayKey };
           return updated;
         }),
-      ),
-    );
-    if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
+      );
+      if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
+    });
   }
 
   return (
