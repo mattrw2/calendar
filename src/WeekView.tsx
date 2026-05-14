@@ -59,17 +59,12 @@ export function WeekView({
           type="text"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Add a todo…"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') e.currentTarget.blur();
+          }}
+          placeholder="Add a task…"
           className="flex-1 bg-transparent text-base text-stone-800 dark:text-stone-200 placeholder:text-stone-400 dark:placeholder:text-stone-500 outline-none py-2"
         />
-        {draft.trim() && (
-          <button
-            type="submit"
-            className="text-sm font-medium text-stone-900 dark:text-stone-100 px-3 py-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800"
-          >
-            Add
-          </button>
-        )}
       </form>
     </section>
   );
