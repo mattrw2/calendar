@@ -10,9 +10,10 @@ interface Props {
   onAdd: (dateKey: string, text: string) => void;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
+  onEdit: (id: string, text: string) => void;
 }
 
-export function DayCard({ date, isToday, todos, onAdd, onToggle, onDelete }: Props) {
+export function DayCard({ date, isToday, todos, onAdd, onToggle, onDelete, onEdit }: Props) {
   const [draft, setDraft] = useState('');
   const dateKey = date.format('YYYY-MM-DD');
 
@@ -50,7 +51,13 @@ export function DayCard({ date, isToday, todos, onAdd, onToggle, onDelete }: Pro
       {sorted.length > 0 && (
         <ul className="divide-y divide-stone-100 dark:divide-stone-800 mb-2">
           {sorted.map((t) => (
-            <TodoItem key={t.id} todo={t} onToggle={onToggle} onDelete={onDelete} />
+            <TodoItem
+              key={t.id}
+              todo={t}
+              onToggle={onToggle}
+              onDelete={onDelete}
+              onEdit={onEdit}
+            />
           ))}
         </ul>
       )}

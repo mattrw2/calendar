@@ -67,6 +67,18 @@ export default function App() {
     dbDelete(id).catch((err) => console.error('Failed to delete todo', err));
   }
 
+  function handleEdit(id: string, text: string) {
+    let updated: Todo | undefined;
+    setTodos((prev) =>
+      prev.map((t) => {
+        if (t.id !== id) return t;
+        updated = { ...t, text };
+        return updated;
+      }),
+    );
+    if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
+  }
+
   function handleMoveToToday(id: string) {
     let updated: Todo | undefined;
     setTodos((prev) =>
@@ -94,6 +106,7 @@ export default function App() {
                 onAdd={handleAdd}
                 onToggle={handleToggle}
                 onDelete={handleDelete}
+                onEdit={handleEdit}
               />
             );
           })}
@@ -104,6 +117,7 @@ export default function App() {
             onAdd={(text) => handleAdd('week', text)}
             onToggle={handleToggle}
             onDelete={handleDelete}
+            onEdit={handleEdit}
             onMoveToToday={handleMoveToToday}
           />
         )}
