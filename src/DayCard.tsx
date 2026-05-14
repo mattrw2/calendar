@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import type { Dayjs } from 'dayjs';
 import type { Todo } from './types';
 import { TodoItem } from './TodoItem';
+import { findTime } from './parseTime';
 
 interface Props {
   date: Dayjs;
@@ -25,7 +26,14 @@ export function DayCard({ date, isToday, todos, onAdd, onToggle, onDelete, onEdi
     setDraft('');
   }
 
-  const sorted = [...todos].sort((a, b) => a.createdAt - b.createdAt);
+  const sorted = [...todos].sort((a, b) => {
+    const ta = findTime(a.text)?.minutes ?? null;
+    const tb = findTime(b.text)?.minutes ?? null;
+    if (ta !== null && tb !== null) return ta - tb;
+    if (ta !== null) return -1;
+    if (tb !== null) return 1;
+    return a.createdAt - b.createdAt;
+  });
 
   return (
     <section className="py-3 border-b border-stone-200 dark:border-stone-800 last:border-b-0">

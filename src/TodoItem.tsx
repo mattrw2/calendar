@@ -1,5 +1,20 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import type { Todo } from './types';
+import { findTime } from './parseTime';
+
+function TextWithTime({ text }: { text: string }) {
+  const match = findTime(text);
+  if (!match) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, match.start)}
+      <span className="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300">
+        {text.slice(match.start, match.end)}
+      </span>
+      {text.slice(match.end)}
+    </>
+  );
+}
 
 interface Props {
   todo: Todo;
@@ -79,7 +94,7 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit, onMoveToToday }: Pr
               : 'text-stone-800 dark:text-stone-200')
           }
         >
-          {todo.text}
+          <TextWithTime text={todo.text} />
         </button>
       )}
 
