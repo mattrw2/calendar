@@ -33,12 +33,6 @@ export function WeekView({
 
   return (
     <section>
-      <header className="mb-2">
-        <h2 className="text-base font-semibold text-stone-900 dark:text-stone-100">
-          Unscheduled
-        </h2>
-      </header>
-
       {sorted.length > 0 && (
         <ul className="divide-y divide-stone-100 dark:divide-stone-800 mb-2">
           {sorted.map((t) => (

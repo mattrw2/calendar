@@ -127,7 +127,7 @@ export default function App() {
         className="fixed inset-x-0 bottom-0 z-10 border-t border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-950"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
-        <div className="mx-auto max-w-md flex">
+        <div className="mx-auto max-w-md flex divide-x divide-stone-200 dark:divide-stone-800">
           <TabButton
             label="Calendar"
             active={view === 'calendar'}
