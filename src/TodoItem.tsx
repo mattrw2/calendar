@@ -1,9 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import type { Todo } from './types';
 
 interface Props {
@@ -11,26 +6,10 @@ interface Props {
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
   onEdit: (id: string, text: string) => void;
-  onSetTime?: (id: string, time: string | undefined) => void;
   onMoveToToday?: (id: string) => void;
 }
 
-const HOUR_OPTIONS = Array.from({ length: 13 }, (_, i) => {
-  const hour = i + 7;
-  const value = `${String(hour).padStart(2, '0')}:00`;
-  const period = hour >= 12 ? 'PM' : 'AM';
-  const h12 = hour % 12 || 12;
-  return { value, label: `${h12} ${period}` };
-});
-
-export function TodoItem({
-  todo,
-  onToggle,
-  onDelete,
-  onEdit,
-  onSetTime,
-  onMoveToToday,
-}: Props) {
+export function TodoItem({ todo, onToggle, onDelete, onEdit, onMoveToToday }: Props) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(todo.text);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -79,54 +58,30 @@ export function TodoItem({
         className="h-5 w-5 shrink-0 rounded border-stone-300 dark:border-stone-600 text-stone-900 dark:text-stone-100 focus:ring-stone-400 dark:focus:ring-stone-500 cursor-pointer"
       />
 
-      <div className="flex-1 flex items-baseline gap-2 min-w-0">
-        {editing ? (
-          <input
-            ref={inputRef}
-            type="text"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onBlur={commit}
-            onKeyDown={handleKey}
-            className="flex-1 bg-transparent text-base text-stone-800 dark:text-stone-200 outline-none py-1"
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={startEdit}
-            className={
-              'text-left text-base leading-snug break-words bg-transparent ' +
-              (todo.done
-                ? 'line-through text-stone-400 dark:text-stone-500'
-                : 'text-stone-800 dark:text-stone-200')
-            }
-          >
-            {todo.text}
-          </button>
-        )}
-
-        {!editing && onSetTime && (
-          <select
-            value={todo.time ?? ''}
-            onChange={(e) =>
-              onSetTime(todo.id, e.target.value || undefined)
-            }
-            className={
-              'shrink-0 text-xs whitespace-nowrap px-2 py-0.5 rounded-md appearance-none cursor-pointer ' +
-              (todo.time
-                ? 'bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300'
-                : 'bg-stone-100 dark:bg-stone-800/60 text-stone-500 dark:text-stone-400')
-            }
-          >
-            <option value="">+ time</option>
-            {HOUR_OPTIONS.map((h) => (
-              <option key={h.value} value={h.value}>
-                {h.label}
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
+      {editing ? (
+        <input
+          ref={inputRef}
+          type="text"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={handleKey}
+          className="flex-1 bg-transparent text-base text-stone-800 dark:text-stone-200 outline-none py-1"
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={startEdit}
+          className={
+            'flex-1 text-left text-base leading-snug break-words bg-transparent ' +
+            (todo.done
+              ? 'line-through text-stone-400 dark:text-stone-500'
+              : 'text-stone-800 dark:text-stone-200')
+          }
+        >
+          {todo.text}
+        </button>
+      )}
 
       {!editing && onMoveToToday && (
         <button

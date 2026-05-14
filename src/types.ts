@@ -4,5 +4,4 @@ export interface Todo {
   text: string;
   done: boolean;
   createdAt: number;
-  time?: string;
 }
