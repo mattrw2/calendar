@@ -11,9 +11,19 @@ interface Props {
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
   onEdit: (id: string, text: string) => void;
+  onSetTime: (id: string, time: string | undefined) => void;
 }
 
-export function DayCard({ date, isToday, todos, onAdd, onToggle, onDelete, onEdit }: Props) {
+export function DayCard({
+  date,
+  isToday,
+  todos,
+  onAdd,
+  onToggle,
+  onDelete,
+  onEdit,
+  onSetTime,
+}: Props) {
   const [draft, setDraft] = useState('');
   const dateKey = date.format('YYYY-MM-DD');
 
@@ -25,7 +35,12 @@ export function DayCard({ date, isToday, todos, onAdd, onToggle, onDelete, onEdi
     setDraft('');
   }
 
-  const sorted = [...todos].sort((a, b) => a.createdAt - b.createdAt);
+  const sorted = [...todos].sort((a, b) => {
+    if (a.time && b.time) return a.time.localeCompare(b.time);
+    if (a.time) return -1;
+    if (b.time) return 1;
+    return a.createdAt - b.createdAt;
+  });
 
   return (
     <section className="py-3 border-b border-stone-200 dark:border-stone-800 last:border-b-0">
@@ -57,6 +72,7 @@ export function DayCard({ date, isToday, todos, onAdd, onToggle, onDelete, onEdi
               onToggle={onToggle}
               onDelete={onDelete}
               onEdit={onEdit}
+              onSetTime={onSetTime}
             />
           ))}
         </ul>

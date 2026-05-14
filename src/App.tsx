@@ -79,6 +79,19 @@ export default function App() {
     if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
   }
 
+  function handleSetTime(id: string, time: string | undefined) {
+    let updated: Todo | undefined;
+    setTodos((prev) =>
+      prev.map((t) => {
+        if (t.id !== id) return t;
+        const { time: _, ...rest } = t;
+        updated = time ? { ...rest, time } : { ...rest };
+        return updated;
+      }),
+    );
+    if (updated) putTodo(updated).catch((err) => console.error('Failed to save todo', err));
+  }
+
   function handleMoveToToday(id: string) {
     let updated: Todo | undefined;
     setTodos((prev) =>
@@ -107,6 +120,7 @@ export default function App() {
                 onToggle={handleToggle}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
+                onSetTime={handleSetTime}
               />
             );
           })}
