@@ -109,44 +109,56 @@ export default function App() {
   }
 
   return (
-    <>
-      <main className="mx-auto max-w-md px-4 py-6 pb-28">
-        {loaded && view === 'calendar' &&
-          days.map((d) => {
-            const key = d.format('YYYY-MM-DD');
-            const isToday = key === todayKey;
-            const isPast = key < todayKey;
-            return (
-              <div key={key} ref={isToday ? todayRef : undefined}>
-                <DayCard
-                  date={d}
-                  isToday={isToday}
-                  isPast={isPast}
-                  todos={byDate.get(key) ?? []}
-                  onAdd={handleAdd}
-                  onToggle={handleToggle}
-                  onDelete={handleDelete}
-                  onEdit={handleEdit}
-                  onMoveToToday={handleMoveToToday}
-                />
-              </div>
-            );
-          })}
+    <div className="h-dvh flex flex-col">
+      <div
+        className="flex-1 min-h-0 overflow-y-auto"
+        hidden={view !== 'calendar'}
+      >
+        <main className="mx-auto max-w-md px-4 py-6">
+          {loaded &&
+            days.map((d) => {
+              const key = d.format('YYYY-MM-DD');
+              const isToday = key === todayKey;
+              const isPast = key < todayKey;
+              return (
+                <div key={key} ref={isToday ? todayRef : undefined}>
+                  <DayCard
+                    date={d}
+                    isToday={isToday}
+                    isPast={isPast}
+                    todos={byDate.get(key) ?? []}
+                    onAdd={handleAdd}
+                    onToggle={handleToggle}
+                    onDelete={handleDelete}
+                    onEdit={handleEdit}
+                    onMoveToToday={handleMoveToToday}
+                  />
+                </div>
+              );
+            })}
+        </main>
+      </div>
 
-        {loaded && view === 'week' && (
-          <WeekView
-            todos={todos.filter((t) => t.dateKey === 'week')}
-            onAdd={(text) => handleAdd('week', text)}
-            onToggle={handleToggle}
-            onDelete={handleDelete}
-            onEdit={handleEdit}
-            onMoveToToday={handleMoveToToday}
-          />
-        )}
-      </main>
+      <div
+        className="flex-1 min-h-0 overflow-y-auto"
+        hidden={view !== 'week'}
+      >
+        <main className="mx-auto max-w-md px-4 py-6">
+          {loaded && (
+            <WeekView
+              todos={todos.filter((t) => t.dateKey === 'week')}
+              onAdd={(text) => handleAdd('week', text)}
+              onToggle={handleToggle}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+              onMoveToToday={handleMoveToToday}
+            />
+          )}
+        </main>
+      </div>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-10 border-t border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-950"
+        className="border-t border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-950"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div className="mx-auto max-w-md flex divide-x divide-stone-200 dark:divide-stone-800">
@@ -162,7 +174,7 @@ export default function App() {
           />
         </div>
       </nav>
-    </>
+    </div>
   );
 }
 
