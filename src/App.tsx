@@ -71,7 +71,7 @@ export default function App() {
       done: false,
       createdAt: Date.now(),
     };
-    withTransition(() => setTodos((prev) => [...prev, todo]));
+    setTodos((prev) => [...prev, todo]);
     putTodo(todo).catch((err) => console.error('Failed to save todo', err));
   }
 
