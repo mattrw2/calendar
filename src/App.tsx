@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import dayjs from 'dayjs';
 import type { Todo } from './types';
@@ -6,6 +6,7 @@ import { getAllTodos, putTodo, deleteTodo as dbDelete } from './db';
 import { DayCard } from './DayCard';
 import { WeekView } from './WeekView';
 
+const DAYS_BACK = 7;
 const DAYS_FORWARD = 13;
 
 type View = 'calendar' | 'week';
@@ -25,6 +26,8 @@ export default function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [view, setView] = useState<View>('calendar');
+  const todayRef = useRef<HTMLDivElement>(null);
+  const didScrollRef = useRef(false);
 
   useEffect(() => {
     getAllTodos()
@@ -33,9 +36,19 @@ export default function App() {
       .finally(() => setLoaded(true));
   }, []);
 
+  useEffect(() => {
+    if (loaded && view === 'calendar' && !didScrollRef.current && todayRef.current) {
+      todayRef.current.scrollIntoView({ block: 'start' });
+      didScrollRef.current = true;
+    }
+  }, [loaded, view]);
+
   const days = useMemo(() => {
-    const today = dayjs().startOf('day');
-    return Array.from({ length: DAYS_FORWARD + 1 }, (_, i) => today.add(i, 'day'));
+    const start = dayjs().startOf('day').subtract(DAYS_BACK, 'day');
+    return Array.from(
+      { length: DAYS_BACK + DAYS_FORWARD + 1 },
+      (_, i) => start.add(i, 'day'),
+    );
   }, []);
 
   const todayKey = dayjs().format('YYYY-MM-DD');
@@ -103,17 +116,22 @@ export default function App() {
         {loaded && view === 'calendar' &&
           days.map((d) => {
             const key = d.format('YYYY-MM-DD');
+            const isToday = key === todayKey;
+            const isPast = key < todayKey;
             return (
-              <DayCard
-                key={key}
-                date={d}
-                isToday={key === todayKey}
-                todos={byDate.get(key) ?? []}
-                onAdd={handleAdd}
-                onToggle={handleToggle}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-              />
+              <div key={key} ref={isToday ? todayRef : undefined}>
+                <DayCard
+                  date={d}
+                  isToday={isToday}
+                  isPast={isPast}
+                  todos={byDate.get(key) ?? []}
+                  onAdd={handleAdd}
+                  onToggle={handleToggle}
+                  onDelete={handleDelete}
+                  onEdit={handleEdit}
+                  onMoveToToday={handleMoveToToday}
+                />
+              </div>
             );
           })}
 
