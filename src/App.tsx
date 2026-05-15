@@ -94,9 +94,7 @@ export default function App() {
     const current = todos.find((t) => t.id === id);
     if (!current) return;
     const updated: Todo = { ...current, text };
-    withTransition(() =>
-      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t))),
-    );
+    setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)));
     putTodo(updated).catch((err) => console.error('Failed to save todo', err));
   }
 

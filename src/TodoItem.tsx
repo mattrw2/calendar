@@ -103,8 +103,8 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit, onMoveToToday }: Pr
 
   function commit() {
     const next = draft.trim();
-    if (next && next !== todo.text) onEdit(todo.id, next);
     setEditing(false);
+    if (next && next !== todo.text) onEdit(todo.id, next);
   }
 
   function cancel() {
