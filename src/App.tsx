@@ -6,7 +6,7 @@ import { getAllTodos, putTodo, deleteTodo as dbDelete } from './db';
 import { DayCard } from './DayCard';
 import { WeekView } from './WeekView';
 
-const DAYS_BACK = 7;
+const DAYS_BACK = 2;
 const DAYS_FORWARD = 13;
 
 type View = 'calendar' | 'week';
@@ -108,6 +108,16 @@ export default function App() {
     putTodo(updated).catch((err) => console.error('Failed to save todo', err));
   }
 
+  function handleMoveToUnscheduled(id: string) {
+    const current = todos.find((t) => t.id === id);
+    if (!current) return;
+    const updated: Todo = { ...current, dateKey: 'week' };
+    withTransition(() =>
+      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t))),
+    );
+    putTodo(updated).catch((err) => console.error('Failed to save todo', err));
+  }
+
   return (
     <div className="h-dvh flex flex-col">
       <div
@@ -132,6 +142,7 @@ export default function App() {
                     onDelete={handleDelete}
                     onEdit={handleEdit}
                     onMoveToToday={handleMoveToToday}
+                    onMoveToUnscheduled={handleMoveToUnscheduled}
                   />
                 </div>
               );

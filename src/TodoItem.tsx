@@ -69,9 +69,17 @@ interface Props {
   onDelete: (id: string) => void;
   onEdit: (id: string, text: string) => void;
   onMoveToToday?: (id: string) => void;
+  onMoveToUnscheduled?: (id: string) => void;
 }
 
-export function TodoItem({ todo, onToggle, onDelete, onEdit, onMoveToToday }: Props) {
+export function TodoItem({
+  todo,
+  onToggle,
+  onDelete,
+  onEdit,
+  onMoveToToday,
+  onMoveToUnscheduled,
+}: Props) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(todo.text);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -166,6 +174,15 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit, onMoveToToday }: Pr
           className="text-xs font-medium text-stone-600 dark:text-stone-300 px-2 py-1 rounded-md hover:bg-stone-200 dark:hover:bg-stone-800 whitespace-nowrap"
         >
           → Today
+        </button>
+      )}
+      {!editing && onMoveToUnscheduled && (
+        <button
+          type="button"
+          onClick={() => onMoveToUnscheduled(todo.id)}
+          className="text-xs font-medium text-stone-600 dark:text-stone-300 px-2 py-1 rounded-md hover:bg-stone-200 dark:hover:bg-stone-800 whitespace-nowrap"
+        >
+          → Unscheduled
         </button>
       )}
       {!editing && (

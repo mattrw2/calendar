@@ -14,6 +14,7 @@ interface Props {
   onDelete: (id: string) => void;
   onEdit: (id: string, text: string) => void;
   onMoveToToday: (id: string) => void;
+  onMoveToUnscheduled: (id: string) => void;
 }
 
 export function DayCard({
@@ -26,6 +27,7 @@ export function DayCard({
   onDelete,
   onEdit,
   onMoveToToday,
+  onMoveToUnscheduled,
 }: Props) {
   const [draft, setDraft] = useState('');
   const dateKey = date.format('YYYY-MM-DD');
@@ -79,6 +81,7 @@ export function DayCard({
               onDelete={onDelete}
               onEdit={onEdit}
               onMoveToToday={isPast && !t.done ? onMoveToToday : undefined}
+              onMoveToUnscheduled={isPast && !t.done ? onMoveToUnscheduled : undefined}
             />
           ))}
         </ul>
@@ -90,6 +93,12 @@ export function DayCard({
             type="text"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
+            onFocus={(e) => {
+              const el = e.currentTarget;
+              setTimeout(() => {
+                el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+              }, 300);
+            }}
             onKeyDown={(e) => {
               if (e.key === 'Escape') e.currentTarget.blur();
             }}
