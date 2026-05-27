@@ -119,57 +119,57 @@ export default function App() {
   }
 
   return (
-    <div className="h-dvh flex flex-col">
-      <div
-        className="flex-1 min-h-0 overflow-y-auto"
+    <>
+      <main
+        className="mx-auto max-w-md px-4 py-6"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 5rem)' }}
         hidden={view !== 'calendar'}
       >
-        <main className="mx-auto max-w-md px-4 py-6">
-          {loaded &&
-            days.map((d) => {
-              const key = d.format('YYYY-MM-DD');
-              const isToday = key === todayKey;
-              const isPast = key < todayKey;
-              return (
-                <div key={key} ref={isToday ? todayRef : undefined}>
-                  <DayCard
-                    date={d}
-                    isToday={isToday}
-                    isPast={isPast}
-                    todos={byDate.get(key) ?? []}
-                    onAdd={handleAdd}
-                    onToggle={handleToggle}
-                    onDelete={handleDelete}
-                    onEdit={handleEdit}
-                    onMoveToToday={handleMoveToToday}
-                    onMoveToUnscheduled={handleMoveToUnscheduled}
-                  />
-                </div>
-              );
-            })}
-        </main>
-      </div>
+        {loaded &&
+          days.map((d) => {
+            const key = d.format('YYYY-MM-DD');
+            const isToday = key === todayKey;
+            const isPast = key < todayKey;
+            const dayTodos = byDate.get(key) ?? [];
+            if (isPast && dayTodos.length === 0) return null;
+            return (
+              <div key={key} ref={isToday ? todayRef : undefined}>
+                <DayCard
+                  date={d}
+                  isToday={isToday}
+                  isPast={isPast}
+                  todos={dayTodos}
+                  onAdd={handleAdd}
+                  onToggle={handleToggle}
+                  onDelete={handleDelete}
+                  onEdit={handleEdit}
+                  onMoveToToday={handleMoveToToday}
+                  onMoveToUnscheduled={handleMoveToUnscheduled}
+                />
+              </div>
+            );
+          })}
+      </main>
 
-      <div
-        className="flex-1 min-h-0 overflow-y-auto"
+      <main
+        className="mx-auto max-w-md px-4 py-6"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 5rem)' }}
         hidden={view !== 'week'}
       >
-        <main className="mx-auto max-w-md px-4 py-6">
-          {loaded && (
-            <WeekView
-              todos={todos.filter((t) => t.dateKey === 'week')}
-              onAdd={(text) => handleAdd('week', text)}
-              onToggle={handleToggle}
-              onDelete={handleDelete}
-              onEdit={handleEdit}
-              onMoveToToday={handleMoveToToday}
-            />
-          )}
-        </main>
-      </div>
+        {loaded && (
+          <WeekView
+            todos={todos.filter((t) => t.dateKey === 'week')}
+            onAdd={(text) => handleAdd('week', text)}
+            onToggle={handleToggle}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+            onMoveToToday={handleMoveToToday}
+          />
+        )}
+      </main>
 
       <nav
-        className="border-t border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-950"
+        className="fixed bottom-0 left-0 right-0 border-t border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-950"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div className="mx-auto max-w-md flex divide-x divide-stone-200 dark:divide-stone-800">
@@ -185,7 +185,7 @@ export default function App() {
           />
         </div>
       </nav>
-    </div>
+    </>
   );
 }
 

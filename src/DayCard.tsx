@@ -93,12 +93,6 @@ export function DayCard({
             type="text"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            onFocus={(e) => {
-              const el = e.currentTarget;
-              setTimeout(() => {
-                el.scrollIntoView({ block: 'center', behavior: 'smooth' });
-              }, 300);
-            }}
             onKeyDown={(e) => {
               if (e.key === 'Escape') e.currentTarget.blur();
             }}
