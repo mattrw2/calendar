@@ -132,7 +132,7 @@ export default function App() {
             const isToday = key === todayKey;
             const isPast = key < todayKey;
             const dayTodos = byDate.get(key) ?? [];
-            if (isPast && dayTodos.length === 0) return null;
+            if (isPast && dayTodos.every((t) => t.done)) return null;
             return (
               <div key={key} ref={isToday ? todayRef : undefined}>
                 <DayCard
