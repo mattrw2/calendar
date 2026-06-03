@@ -5,11 +5,12 @@ import type { Todo } from './types';
 import { getAllTodos, putTodo, deleteTodo as dbDelete } from './db';
 import { DayCard } from './DayCard';
 import { WeekView } from './WeekView';
+import { WeeklyView, WEEKLY_PREFIX } from './WeeklyView';
 
 const DAYS_BACK = 2;
 const DAYS_FORWARD = 13;
 
-type View = 'calendar' | 'week';
+type View = 'calendar' | 'week' | 'weekly';
 
 function withTransition(fn: () => void) {
   const start = (document as Document & {
@@ -168,6 +169,20 @@ export default function App() {
         )}
       </main>
 
+      <main
+        className="mx-auto max-w-md px-4 py-6"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 5rem)' }}
+        hidden={view !== 'weekly'}
+      >
+        {loaded && (
+          <WeeklyView
+            todos={todos.filter((t) => t.dateKey.startsWith(WEEKLY_PREFIX))}
+            onAdd={handleAdd}
+            onDelete={handleDelete}
+          />
+        )}
+      </main>
+
       <nav
         className="fixed bottom-0 left-0 right-0 border-t border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-950"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
@@ -182,6 +197,11 @@ export default function App() {
             label="Unscheduled"
             active={view === 'week'}
             onClick={() => setView('week')}
+          />
+          <TabButton
+            label="Weekly"
+            active={view === 'weekly'}
+            onClick={() => setView('weekly')}
           />
         </div>
       </nav>
